@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon"/>
+
+    <title>gitStalk</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom styles for this template -->
+
+    <!-- Built by Chris at craftfortress.  4 hours including, design & deployment? Hmmmm It took me around 5-6. That is not counting constant the 5 minute lag outs trying to simply login to nodejitsu -->
+    <script type="text/javascript" src="http://gitstalk.nodejitsu.com/socket.io/socket.io.js"></script>
+
+    <style>
+
+      body {
+      padding-top: 50px;
+      }
+      .starter-template {
+      padding: 40px 15px;
+      text-align: center;
+      }
+
+
+      .resize { zoom: 0.75; -moz-transform: scale(0.75); -moz-transform-origin: 0 0; }
+
+
+      .thumb
+      {
+      height:80px;
+      width:80px;
+      }
+
+
+      .thumby
+      {
+      max-height:100px;
+
+      }
+    </style>
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+
+
+  <script>
+
+
+    // var socketio = io.connect("ws://localhost:1337");
+
+    var socketio = io.connect("ws://gitstalk.nodejitsu.com");
+
+    function sendMessage() {
+
+    socketio.emit("message_to_server", { message:   document.getElementById("name").value });
+
+
+    }
+
+
+
+    //  var socketio = io.connect("ws://localhost:1337");
+
+
+    socketio.on("message_to_client", function (data) {
+
+
+
+    document.getElementById("connect").innerHTML = ( data['message'] );
+
+
+    });
+
+
+
+    socketio.on("githubresponse_to_client", function (data) {
+    var result = data.message
+    result =  JSON.parse(result);
+    console.log("RESPONSE" + result  );
+
+
+
+    var lang = [];
+
+
+
+    var count = 0;
+    for (var i = 0; i <   result.length; i++) {
+        if ( result[i].language) {
+         lang.push(result[i].language) ;     
+      count++;
+        }
+    } 
+
+      
+      
+      var name  = result[0].owner.login;
+      var image = result[0].owner.avatar_url;
+      
+      store = lang;
+      var frequency = {};  // array of frequency.
+var max = 0;  // holds the max frequency.
+var maxelem;   // holds the max frequency element.
+for(var v in store) {
+        frequency[store[v]]=(frequency[store[v]] || 0)+1; // increment frequency.
+        if(frequency[store[v]] > max) { // is this frequency > max so far ?
+                max = frequency[store[v]];  // update max.
+                maxelem = store[v];          // update result.
+        }
+}
+     
+    
+    document.getElementById("box").innerHTML = ( "<div class='col-xs-6 col-md-1' style='margin-top:5px;'>  <a href='http://www.github.com/"+name+"' class='thumbnail' style='max-width:80px;'> <img src='"  + image +   "' />   </a>  </div><div class='col-xs-6 col-md-1'>  <p style='margin-top:5px;'> <b>" +   name + "   </b>  </p>  <p> " +   maxelem + "  </p>   </div> "  );
+
+    });
+
+
+  </script>
+
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container" style="width:auto;">
+        <div class="navbar-header" style="width:100% !important;min-width:780px;">
+
+
+          <div  style="float:left;width:150px;">
+            <ul class="nav navbar-nav">
+              <li>
+                <a class="navbar-brand" href="#"  data-toggle="modal" data-target="#myModal">gitStalk</a>
+              </li>
+
+
+            </ul>
+
+
+
+          </div>
+
+
+
+          <div  style="margin-top:15px;margin-right:5px;">
+
+
+
+
+            <ul class="nav navbar-nav" style="height:20px;min-width:350px;float:right; position:fixed;height:20px;right:50px;">
+
+
+
+
+            </ul>
+          </div>
+
+
+
+        </div>
+      </div>
+      <!--/.nav-collapse -->
+    </div>
+    <br/>
+
+    <div style="padding:50px;">
+      <div id="connect"></div>
+      <br/>
+      <div class="input-group input-group-sm" style="width:50%">
+
+        <input class="form-control" placeholder="Message" type="text" id="name" value="craftfortress">
+        </input>
+        <span class="input-group-btn">
+          <button class="btn btn-default" onclick="sendMessage()" type="button" data-toggle="tooltip" data-placement="bottom" title="Tooltip on right">Stalk</button>
+        </span>
+
+      </div>
+
+      <div class='row'>
+        <div id="box" style="padding:5px;">
+
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+
+
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel">Welcome to gitStalk</h4>
+          </div>
+          <div class="modal-body">
+
+
+
+            <center>
+              <img src="http://i.imgur.com/q4Ty4Eb.gif"></img>
+            </center>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+  </body>
+</html>
